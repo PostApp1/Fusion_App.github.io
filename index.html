@@ -29,7 +29,7 @@
 
 <style>
 /* ==========================================================================
-   CSS VARIABLES & GLOBAL STYLES (complete retention + professional polish + performance upgrades)
+   CSS VARIABLES & GLOBAL STYLES (complete retention + professional polish)
    ========================================================================== */
 :root {
     --primary: #4361ee;
@@ -59,13 +59,14 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-/* PERFORMANCE UPGRADES: GPU acceleration, will-change, reduced repaint */
+/* ==========================================================================
+   LAYOUT & CONTAINERS (complete retention + advanced professional upgrades)
+   ========================================================================== */
 .app-container { 
     width: 98vw; height: 96vh; background: rgba(8, 12, 24, 0.5); 
     backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
     border-radius: 2rem; box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9), inset 0 0 0 1px var(--glass-border); 
     overflow: hidden; display: flex; flex-direction: column; position: relative;
-    will-change: transform;
 }
 
 .announcement-bar {
@@ -76,7 +77,7 @@ body {
 }
 .announcement-icon { margin-right: 1.5rem; z-index: 2; background: inherit; padding-right: 10px; box-shadow: 10px 0 15px rgba(0,0,0,0.2); }
 .marquee-container { flex: 1; overflow: hidden; white-space: nowrap; }
-.marquee-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; will-change: transform; }
+.marquee-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
 .announcement-bar:hover .marquee-text { animation-play-state: paused; cursor: default; }
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
@@ -109,7 +110,7 @@ body {
 .sidebar { 
     width: 260px; background: rgba(8, 12, 24, 0.6); 
     border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; 
-    transition: transform 0.3s ease, width 0.3s ease; will-change: width;
+    transition: transform 0.3s ease, width 0.3s ease; 
 }
 .sidebar.hidden { width: 0; transform: translateX(-100%); border: none; }
 .nav-menu { list-style: none; padding: 1.5rem 1rem; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
@@ -118,9 +119,9 @@ body {
 .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.05); color: white; border-left: 3px solid var(--primary); }
 .nav-item.active { background: linear-gradient(90deg, rgba(67, 97, 238, 0.15), transparent); }
 
-.main-content { flex: 1; padding: 2.5rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+.main-content { flex: 1; padding: 2.5rem; overflow-y: auto; position: relative; }
 
-.glass-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 1.5rem; padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-heavy); transition: 0.3s; position: relative; will-change: transform;}
+.glass-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 1.5rem; padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-heavy); transition: 0.3s; position: relative;}
 .section-title { font-size: 1.6rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
 .section-title-left { display: flex; align-items: center; gap: 0.8rem; }
 .section-title-left i { color: var(--primary); }
@@ -354,7 +355,7 @@ const fbApp = initializeApp(firebaseConfig);
 const db = getDatabase(fbApp);
 
 // ==========================================================================
-// 2. GLOBAL STATE + ADVANCED AI ENGINE GLOBALS (v2.3 + 16 AUTONOMOUS TASKS)
+// 2. GLOBAL STATE + ADVANCED AI ENGINE GLOBALS (UPGRADED WITH OVERRIDE)
 // ==========================================================================
 let state = {
     currentUser: null,
@@ -382,8 +383,7 @@ let state = {
         aiLikesMin: 1,
         aiLikesMax: 8,
         aiSkipChance: 0.20,
-        aiLikeOverrideMultiplier: 1.0,
-        aiActiveTasks: [1,5,8,13]
+        aiLikeOverrideMultiplier: 1.0
     },
     editor: { id: null, name: '', active: false, html: '', css: '', js: '', activeTab: 'html', instance: null },
     chat: { selectedUserEmail: null },
@@ -395,37 +395,14 @@ let state = {
     chatFullscreen: false
 };
 
+// ADVANCED AI ENGINE GLOBALS (PERSISTENT + UPGRADED WITH CYCLE COUNTER + OVERRIDE)
 let likeSimulationTimeout = null;
 let currentAIBehaviourIndex = 0;
 let aiEngineStarted = false;
 let aiCycleCount = 0;
 
-let renderDebounceTimer = null;
-
-// NEW: SCROLL PRESERVATION (root cause fix - prevents jump-to-top on full innerHTML replacement)
-let savedScrolls = {};
-
-function saveScrollPositions() {
-    const main = document.querySelector('.main-content');
-    if (main) savedScrolls.main = main.scrollTop;
-
-    const chatBoxes = document.querySelectorAll('.chat-messages, #lock-chat-box, #fullscreen-chat-messages');
-    chatBoxes.forEach((box, i) => {
-        savedScrolls[`chat${i}`] = box.scrollTop;
-    });
-}
-
-function restoreScrollPositions() {
-    const main = document.querySelector('.main-content');
-    if (main && typeof savedScrolls.main !== 'undefined') {
-        main.scrollTop = savedScrolls.main;
-    }
-    // Chat boxes always auto-scroll to bottom (intended behaviour for new messages)
-    setTimeout(scrollAllChatBoxes, 50);
-}
-
 // ==========================================================================
-// 3. UTILITIES + PERFORMANCE OPTIMIZATIONS
+// 3. UTILITIES
 // ==========================================================================
 function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
 function escapeHTML(str) { return str ? str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag])) : ''; }
@@ -491,7 +468,7 @@ function getFeatureAvgRating(feat) {
 }
 
 // ==========================================================================
-// 4. GAMIFICATION & STREAKS LOGIC
+// 4. GAMIFICATION & STREAKS LOGIC (UPGRADED WITH AI REWARD SCORE)
 // ==========================================================================
 async function processUserGamification(user) {
     const today = new Date().toISOString().split('T')[0];
@@ -536,7 +513,7 @@ async function processUserGamification(user) {
 }
 
 // ==========================================================================
-// 5. PROFESSIONAL 10-AI-BEHAVIOUR + 16 TASKS ENGINE
+// 5. PROFESSIONAL 10-AI-BEHAVIOUR UNPREDICTABLE SOCIAL REWARD ENGINE (UPGRADED WITH ADMIN OVERRIDE + STUBBORN AI)
 // ==========================================================================
 const AI_BEHAVIOURS = [
     { name: "Chaotic Randomizer", power: 1.0, postsMin: 1, postsMax: 3, likesMin: 1, likesMax: 5, skipChance: 0.25, stubborn: true },
@@ -549,25 +526,6 @@ const AI_BEHAVIOURS = [
     { name: "Engagement Optimizer", power: 2.0, postsMin: 1, postsMax: 3, likesMin: 3, likesMax: 8, skipChance: 0.14, stubborn: false },
     { name: "Reward Equilibrium", power: 1.7, postsMin: 2, postsMax: 4, likesMin: 1, likesMax: 5, skipChance: 0.19, stubborn: false },
     { name: "Hyper Boost Protocol", power: 3.1, postsMin: 1, postsMax: 2, likesMin: 5, likesMax: 10, skipChance: 0.10, stubborn: false }
-];
-
-const AI_TASKS = [
-    { id: 1, name: "Auto Login Greeting", desc: "Sends personalized welcome message on every user login" },
-    { id: 2, name: "Auto Streak Bonus Reward", desc: "Automatically boosts AI reward score for active streak users" },
-    { id: 3, name: "Auto Viral Like Boost", desc: "Extra likes on trending / high-engagement posts" },
-    { id: 4, name: "Auto Comment Generation", desc: "AI posts intelligent comments on newest posts" },
-    { id: 5, name: "Auto Badge Award", desc: "Awards gamification badges on streak / reward milestones" },
-    { id: 6, name: "Auto Inactive User Reminder", desc: "Sends engagement reminders to inactive users" },
-    { id: 7, name: "Auto Ticket Prioritization", desc: "Flags high-priority support tickets for admin" },
-    { id: 8, name: "Auto Reward Score Adjustment", desc: "Dynamically recalibrates user AI reward scores" },
-    { id: 9, name: "Auto Post Moderation Scan", desc: "Scans recent posts for moderation flags" },
-    { id: 10, name: "Auto Announcement Broadcast", desc: "Broadcasts system announcements to all users" },
-    { id: 11, name: "Auto Rating Prompt", desc: "Prompts users to rate recently used features" },
-    { id: 12, name: "Auto Cycle Speed Optimization", desc: "Dynamically adjusts AI cycle timing based on load" },
-    { id: 13, name: "Auto Override Application", desc: "Applies admin override multiplier intelligently" },
-    { id: 14, name: "Auto Profile Health Check", desc: "Cleans stale data from user profiles" },
-    { id: 15, name: "Auto Activity Log Summary", desc: "Generates daily AI activity summaries for admin" },
-    { id: 16, name: "Auto Behaviour Rotation", desc: "Rotates AI behaviour personalities for variety" }
 ];
 
 function getPostWeight(post, owner, beh) {
@@ -633,6 +591,7 @@ async function simulateRandomLikes(behIndex) {
         );
         if (potentialLikers.length === 0) continue;
 
+        // ADVANCED OVERRIDE LOGIC WITH AUTOMATIC CALCULATION + STUBBORN AI EXCEPTION
         let effectiveLikesMin = beh.likesMin;
         let effectiveLikesMax = beh.likesMax;
         if (!beh.stubborn && mult !== 1.0) {
@@ -655,47 +614,20 @@ async function simulateRandomLikes(behIndex) {
     }
 }
 
-async function executeScheduledTasks() {
-    const activeIds = state.config.aiActiveTasks || [];
-    if (activeIds.length === 0) return;
-
-    for (const tid of activeIds) {
-        const task = AI_TASKS.find(t => t.id === tid);
-        if (!task) continue;
-
-        await logActivity('AI Autonomous Task', `Task #${tid} "${task.name}" executed in cycle #${aiCycleCount}`);
-
-        if (tid === 2) {
-            const streakUsers = state.users.filter(u => (u.streaks?.current || 0) >= 3);
-            for (const u of streakUsers.slice(0, 3)) {
-                let newScore = (u.aiRewardScore || 100) + 35;
-                await update(ref(db, `users/${u.id}`), { aiRewardScore: Math.min(9999, newScore) });
-            }
-        }
-        if (tid === 8) {
-            if (state.users.length > 0) {
-                const randomUser = state.users[Math.floor(Math.random() * state.users.length)];
-                let newScore = (randomUser.aiRewardScore || 100) + (Math.random() > 0.5 ? 12 : -8);
-                await update(ref(db, `users/${randomUser.id}`), { aiRewardScore: Math.max(50, Math.min(9999, newScore)) });
-            }
-        }
-        if (tid === 13) {
-            const currentMult = state.config.aiLikeOverrideMultiplier || 1.0;
-            const newMult = Math.max(0.5, Math.min(3.0, currentMult + (Math.random() * 0.4 - 0.2)));
-            await update(ref(db, 'config'), { aiLikeOverrideMultiplier: parseFloat(newMult.toFixed(1)) });
-        }
-    }
-}
-
 function startLikeSimulation() {
     if (likeSimulationTimeout) clearTimeout(likeSimulationTimeout);
     runLikeCycle();
 }
 
 async function runLikeCycle() {
-    if (!state.config.aiEngineEnabled) return;
+    if (!state.config.aiEngineEnabled) {
+        if (likeSimulationTimeout) {
+            clearTimeout(likeSimulationTimeout);
+            likeSimulationTimeout = null;
+        }
+        return;
+    }
     await simulateRandomLikes(currentAIBehaviourIndex);
-    await executeScheduledTasks();
     currentAIBehaviourIndex = (currentAIBehaviourIndex + 1) % AI_BEHAVIOURS.length;
     const minMs = (state.config.aiCycleMin || 20) * 1000;
     const maxMs = (state.config.aiCycleMax || 40) * 1000;
@@ -704,19 +636,12 @@ async function runLikeCycle() {
 }
 
 // ==========================================================================
-// 6. FIREBASE DATA LISTENERS + DEBOUNCED RENDER + SCROLL PRESERVATION
+// 6. FIREBASE DATA LISTENERS + AUTO-SCROLL FIX
 // ==========================================================================
 function initListeners() {
-    const debouncedRender = () => {
-        if (renderDebounceTimer) clearTimeout(renderDebounceTimer);
-        renderDebounceTimer = setTimeout(() => {
-            renderApp();
-            renderDebounceTimer = null;
-        }, 30);
-    };
-
     onValue(ref(db, 'users'), async snap => { 
         state.users = snap.exists() ? Object.values(snap.val()) : []; 
+        
         if (!state.initialLoadDone) {
             const savedUid = localStorage.getItem('fusion_uid');
             if (savedUid && !state.currentUser) {
@@ -731,6 +656,7 @@ function initListeners() {
             }
             state.initialLoadDone = true;
         }
+
         if (state.currentUser) {
             const updatedMe = state.users.find(u => u.id === state.currentUser.id);
             if (!updatedMe || updatedMe.suspended) {
@@ -739,14 +665,14 @@ function initListeners() {
             }
             state.currentUser = updatedMe;
         }
-        debouncedRender(); 
+        renderApp(); 
     });
 
-    onValue(ref(db, 'features'), snap => { state.features = snap.exists() ? Object.values(snap.val()) : []; debouncedRender(); });
-    onValue(ref(db, 'activity'), snap => { state.activity = snap.exists() ? Object.values(snap.val()).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)) : []; debouncedRender(); });
+    onValue(ref(db, 'features'), snap => { state.features = snap.exists() ? Object.values(snap.val()) : []; renderApp(); });
+    onValue(ref(db, 'activity'), snap => { state.activity = snap.exists() ? Object.values(snap.val()).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)) : []; renderApp(); });
     onValue(ref(db, 'messages'), snap => { 
         state.messages = snap.exists() ? Object.values(snap.val()).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp)) : []; 
-        debouncedRender(); 
+        renderApp(); 
         setTimeout(scrollAllChatBoxes, 80);
     });
     onValue(ref(db, 'config'), snap => { 
@@ -754,7 +680,6 @@ function initListeners() {
             state.config = { ...state.config, ...snap.val() };
             if (!state.config.masterPasskey) state.config.masterPasskey = 'Ayo1boy2';
             if (typeof state.config.aiLikeOverrideMultiplier === 'undefined') state.config.aiLikeOverrideMultiplier = 1.0;
-            if (!state.config.aiActiveTasks) state.config.aiActiveTasks = [1,5,8,13];
             document.documentElement.style.setProperty('--primary', state.config.themePrimary);
             document.documentElement.style.setProperty('--secondary', state.config.themeSecondary);
         }
@@ -770,16 +695,17 @@ function initListeners() {
                 aiEngineStarted = false;
             }
         }
-        debouncedRender(); 
+        renderApp(); 
     });
 
     onValue(ref(db, 'posts'), snap => {
         const val = snap.val();
         state.posts = val ? Object.entries(val).map(([key, val]) => ({id: key, ...val})).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)) : [];
-        debouncedRender();
+        renderApp();
     });
 }
 
+// CENTRALIZED AUTO-SCROLL FIX FOR ALL CHAT BOXES
 function scrollAllChatBoxes() {
     const boxes = [
         document.getElementById('chat-box'),
@@ -792,7 +718,7 @@ function scrollAllChatBoxes() {
 }
 
 // ==========================================================================
-// 7. AUTHENTICATION + AI AUTO GREETING
+// 7. AUTHENTICATION
 // ==========================================================================
 window.handleLogin = async () => {
     const email = document.getElementById('l-email').value.trim().toLowerCase();
@@ -805,8 +731,7 @@ window.handleLogin = async () => {
     if (user.lockUntil && new Date(user.lockUntil) > new Date()) {
         state.currentUser = user; 
         state.currentView = 'lockedOut';
-        renderApp();
-        return;
+        return renderApp();
     }
 
     if (user.password !== pwd) {
@@ -833,14 +758,8 @@ window.handleLogin = async () => {
     state.currentView = user.role === 'USER' ? 'feed' : 'dashboard';
     
     await logActivity('Login', 'User authenticated successfully');
-
-    if (user.role === 'USER') {
-        const greetText = `👋 Hello ${user.username}! Welcome back to Fusion Intelligence. Your current streak is ${user.streaks.current} days 🔥. Keep posting & engaging for massive AI reward boosts!`;
-        await push(ref(db, 'messages'), { from: 'AI_ASSISTANT', to: user.email, text: greetText, timestamp: new Date().toISOString() });
-        await logActivity('AI Auto Greeting', `Sent personalized welcome to ${user.email}`);
-    }
-
     window.showToast(`Welcome back, ${user.username}!`, 'success');
+
     renderApp();
 };
 
@@ -892,14 +811,10 @@ window.submitGuestSupport = async () => {
 };
 
 // ==========================================================================
-// 8. MAIN ROUTER & UI ORCHESTRATOR + SCROLL PRESERVATION
+// 8. MAIN ROUTER & UI ORCHESTRATOR + FULLSCREEN CHAT SUPPORT
 // ==========================================================================
 function renderApp() {
     const appEl = document.getElementById('app');
-
-    if (!state.chatFullscreen && state.currentUser) {
-        saveScrollPositions();
-    }
 
     if (state.chatFullscreen) {
         renderFullscreenChat();
@@ -910,9 +825,7 @@ function renderApp() {
         state.currentView = 'lockedOut';
         appEl.innerHTML = renderLockedOutView();
         setupLockoutTimer();
-        setTimeout(() => {
-            restoreScrollPositions();
-        }, 50);
+        setTimeout(scrollAllChatBoxes, 100);
         return;
     }
 
@@ -929,10 +842,7 @@ function renderApp() {
         return;
     }
 
-    if (!state.currentUser) { 
-        appEl.innerHTML = renderAuthScreens(); 
-        return; 
-    }
+    if (!state.currentUser) { appEl.innerHTML = renderAuthScreens(); return; }
 
     const isStaff = ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(state.currentUser.role);
     const hasAnnouncement = state.config.announcement && state.config.announcement.trim() !== '';
@@ -943,7 +853,7 @@ function renderApp() {
     if(state.currentUser.role === 'MODERATOR') roleClass = 'role-mod';
 
     const currentStreak = state.currentUser.streaks?.current || 0;
-    const aiStatus = state.config.aiEngineEnabled ? `Active • Cycle #${aiCycleCount} • ${state.config.aiActiveTasks.length} tasks` : 'Off';
+    const aiStatus = state.config.aiEngineEnabled ? `Active • Cycle #${aiCycleCount}` : 'Off';
 
     appEl.innerHTML = `
         <div class="app-container">
@@ -976,8 +886,6 @@ function renderApp() {
             </div>
         </div>
     `;
-
-    restoreScrollPositions();
 
     if (state.currentView === 'editor') initCodeMirror();
     if (state.currentView === 'adminChat' || state.currentView === 'userChat' || state.currentView === 'lockedOut') {
@@ -1113,7 +1021,7 @@ window.sendFullscreenLockMsg = async () => {
 };
 
 // ==========================================================================
-// RICH TEXT TOOLBAR
+// RICH TEXT TOOLBAR WITH LOCKED ACTIVE STATE
 // ==========================================================================
 function initRichToolbar() {
     const editor = document.getElementById('new-post-content');
@@ -1265,7 +1173,7 @@ window.sendLockMsg = async () => {
 };
 
 // ==========================================================================
-// SIDEBAR + ACTIVE VIEW ROUTER
+// SIDEBAR
 // ==========================================================================
 function renderSidebar(isStaff) {
     const links = [];
@@ -1382,7 +1290,7 @@ window.viewUserProfile = (userId) => {
 };
 
 // ==========================================================================
-// ADMIN VIEWS
+// ADMIN VIEWS (UPGRADED DASHBOARD WITH AI OVERRIDE DISPLAY)
 // ==========================================================================
 function renderAdminDashboard() {
     return `
@@ -1395,7 +1303,6 @@ function renderAdminDashboard() {
             <div class="stat-box"><i class="fas fa-cube"></i><div class="stat-title">Active Features</div><div class="stat-value" style="color:var(--success);">${state.features.filter(f=>f.active).length}</div></div>
             <div class="stat-box"><i class="fas fa-robot"></i><div class="stat-title">AI Cycles Run</div><div class="stat-value" style="color:var(--accent);">${aiCycleCount}</div></div>
             <div class="stat-box"><i class="fas fa-magic"></i><div class="stat-title">AI Override Multiplier</div><div class="stat-value" style="color:var(--warning);">${(state.config.aiLikeOverrideMultiplier || 1.0).toFixed(1)}×</div></div>
-            <div class="stat-box"><i class="fas fa-tasks"></i><div class="stat-title">Active AI Tasks</div><div class="stat-value" style="color:var(--success);">${(state.config.aiActiveTasks || []).length}/16</div></div>
         </div>
     `;
 }
@@ -1692,7 +1599,7 @@ async function processCSV(text, type) {
                         lockUntil: null, 
                         joinedAt: new Date().toISOString(), 
                         favorites: [], 
-                        badges: ['pioneer'], 
+                        badges: [], 
                         streaks: { current:1, max:1, lastLoginDate: new Date().toISOString().split('T')[0] },
                         aiRewardScore: 100
                     };
@@ -1944,6 +1851,9 @@ function renderActivity() {
     `;
 }
 
+// ==========================================================================
+// EDITABLE MASTER PASSKEY
+// ==========================================================================
 window.changeMasterKeyModal = () => {
     document.getElementById('modal-mount').innerHTML = `
         <div class="overlay">
@@ -2024,7 +1934,8 @@ function renderSettings() {
                 </div>
             </div>
             
-            <h3 style="margin-top:2rem; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">AI Unpredictable Social Reward Engine <span style="font-size:0.8rem;color:#10b981;">(v2.3 + 16 Autonomous Tasks)</span></h3>
+            <!-- ADVANCED AI UNPREDICTABLE SOCIAL REWARD ENGINE WITH ADMIN OVERRIDE -->
+            <h3 style="margin-top:2rem; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">AI Unpredictable Social Reward Engine <span style="font-size:0.8rem;color:#10b981;">(v2.2 Override + Stubborn AI)</span></h3>
             <div class="input-group">
                 <label>Enable AI Engine</label>
                 <select id="ai-enabled" class="form-control">
@@ -2054,21 +1965,6 @@ function renderSettings() {
             </div>
             <p style="color:var(--text-dim); font-size:0.85rem; margin-top:0.5rem;">Override applies instantly to every AI cycle (except Chaotic Randomizer - Stubborn AI for organic variance).</p>
 
-            <div class="input-group" style="margin-top:2rem;">
-                <label>AI Autonomous Task Scheduler <small style="color:#10b981;">(16 selectable tasks — executed automatically every cycle)</small></label>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem; max-height:320px; overflow-y:auto; padding:1rem; background:rgba(0,0,0,0.2); border-radius:1rem;">
-                    ${AI_TASKS.map(task => `
-                        <div style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:12px;">
-                            <label style="display:flex; align-items:center; gap:0.8rem; cursor:pointer;">
-                                <input type="checkbox" id="task-${task.id}" ${ (c.aiActiveTasks || []).includes(task.id) ? 'checked' : '' } style="accent-color:var(--primary);">
-                                <span style="font-weight:500;">${task.name}</span>
-                            </label>
-                            <small style="color:var(--text-dim); margin-left:1.8rem; display:block;">${task.desc}</small>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-
             ${state.currentUser.role === 'SUPER_ADMIN' ? `
             <h3 style="margin-top:2rem; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">Master Admin Passkey <span style="font-size:0.75rem;color:var(--warning);">(SUPER ADMIN ONLY - editable)</span></h3>
             <button class="btn btn-outline" onclick="window.changeMasterKeyModal()"><i class="fas fa-key"></i> Change Master Passkey</button>
@@ -2079,12 +1975,6 @@ function renderSettings() {
     `;
 }
 window.saveSettings = async () => {
-    const activeTasks = [];
-    for (let i = 1; i <= 16; i++) {
-        const cb = document.getElementById(`task-${i}`);
-        if (cb && cb.checked) activeTasks.push(i);
-    }
-
     const config = { 
         appName: document.getElementById('c-app').value, 
         themePrimary: document.getElementById('c-color1').value, 
@@ -2100,13 +1990,12 @@ window.saveSettings = async () => {
         aiLikesMin: parseInt(document.getElementById('ai-likes-min').value) || 1,
         aiLikesMax: parseInt(document.getElementById('ai-likes-max').value) || 8,
         aiSkipChance: (parseInt(document.getElementById('ai-skip').value) || 20) / 100,
-        aiLikeOverrideMultiplier: parseFloat(document.getElementById('ai-override-mult').value) || 1.0,
-        aiActiveTasks: activeTasks
+        aiLikeOverrideMultiplier: parseFloat(document.getElementById('ai-override-mult').value) || 1.0
     };
     try { 
         await set(ref(db, 'config'), config); 
-        await logActivity('Updated System Settings', `Global config + AI Like Override ×${config.aiLikeOverrideMultiplier.toFixed(1)} + ${activeTasks.length} autonomous tasks`);
-        window.showToast('Global settings applied – AI engine v2.3 + 16 autonomous tasks updated live', 'success'); 
+        await logActivity('Updated System Settings', `Global config + AI Like Override Multiplier set to ${config.aiLikeOverrideMultiplier.toFixed(1)}x`);
+        window.showToast('Global settings applied – AI engine + override updated live (continues even without login)', 'success'); 
         startLikeSimulation();
     } catch(e) {}
 };
@@ -2265,7 +2154,7 @@ window.toggleComments = (postId) => {
 };
 
 window.postComment = async (postId) => {
-    const input = document.getElementById(`comment-input-${post.id}`);
+    const input = document.getElementById(`comment-input-${postId}`);
     const text = input.value.trim();
     if(!text) return;
     
@@ -2340,6 +2229,9 @@ window.requestDelete = async (postId) => {
     });
 };
 
+// ==========================================================================
+// ADMIN POST & COMMENT MANAGEMENT
+// ==========================================================================
 window.createAdminPostModal = () => {
     const userOptions = state.users.map(u => `<option value="${u.id}">${escapeHTML(u.username)} (${escapeHTML(u.email)})</option>`).join('');
     document.getElementById('modal-mount').innerHTML = `
@@ -2739,15 +2631,17 @@ function renderProfile() {
 }
 
 // ==========================================================================
-// 14. BOOTSTRAP INITIALIZATION + FINAL AI BACKGROUND ENSURE (v2.3)
+// 14. BOOTSTRAP INITIALIZATION + FINAL AI BACKGROUND ENSURE
 // ==========================================================================
 initListeners();
 
+// UPGRADE v2.2 FINAL BOOT: Ensure AI Like Cycle + Override is immediately ready for background operation
+// (even before any login or on fresh page load with no user)
 setTimeout(() => {
     if (state.config.aiEngineEnabled && !aiEngineStarted) {
         aiEngineStarted = true;
         startLikeSimulation();
-        console.log('%c🚀 Fusion AI v2.3 fully activated — 16 autonomous tasks + override + stubborn AI (background persistent)', 'color:#10b981; font-weight:bold; font-size:13px');
+        console.log('%c🚀 AI Like Cycle v2.2 fully activated with Admin Override + Stubborn AI (zero-login persistent)', 'color:#10b981; font-weight:bold; font-size:13px');
     }
 }, 1200);
 </script>
